@@ -1,8 +1,8 @@
 namespace QuanLyNguoiDung
 {
-    public partial class Form1 : Form
+    public partial class FormDangNhap : Form
     {
-        public Form1()
+        public FormDangNhap()
         {
             InitializeComponent();
         }
