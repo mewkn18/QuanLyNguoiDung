@@ -6,6 +6,8 @@ namespace QuanLyNguoiDung
         {
             InitializeComponent();
         }
+
+        // Chọn liên kết "Đăng ký": ẩn form Đăng nhập, mở form Đăng ký, đóng lại thì hiện về.
         private void lnkDangKy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             using var formDangKy = new FormDangKy();
@@ -14,98 +16,19 @@ namespace QuanLyNguoiDung
             Show();
             txtTenDangNhap.Focus();
         }
+
         private void btnDangNhap_Click(object sender, EventArgs e)
         {
-           {
-            lblLoi.Text = string.Empty;
-            string tenDangNhap = txtTenDangNhap.Text.Trim();
-            string matKhau = txtMatKhau.Text;
-            
-            if (string.IsNullOrEmpty(tenDangNhap))
-            {
-                lblLoi.Text = "Vui lòng nhập tên đăng nhập.";
-                txtTenDangNhap.Focus();
-                return;
-            }
-            if (string.IsNullOrEmpty(matKhau))
-            {
-                lblLoi.Text = "Vui lòng nhập mật khẩu.";
-                txtMatKhau.Focus();
-                return;
-            }
-            btnDangNhap.Enabled = false;
-            btnDangNhap.Text = "Đang xử lý...";
-            try
-            {
-                bool thanhCong = await XacThucNguoiDungAsync(tenDangNhap, matKhau);
-
-                if (thanhCong)
-                {
-                    FormChinh frmChinh = new FormChinh(tenDangNhap);
-                    frmChinh.FormClosed += (s, args) =>
-                    {
-                        txtMatKhau.Clear();
-                        lblLoi.Text = string.Empty;
-                        this.Show();
-                    };
-
-                    this.Hide();
-                    frmChinh.Show();
-                }
-                else
-                {
-                    lblLoi.Text = "Tên đăng nhập hoặc mật khẩu không chính xác.";
-                    txtMatKhau.Clear();
-                    txtMatKhau.Focus();
-                }
-            }
-            catch (SqlException)
-            {
-                lblLoi.Text = "Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra lại dịch vụ.";
-            }
-            catch (Exception ex)
-            {
-                lblLoi.Text = "Đã xảy ra lỗi hệ thống: " + ex.Message;
-            }
-            finally
-            {
-                btnDangNhap.Enabled = true;
-                btnDangNhap.Text = "Đăng nhập";
-            }
+            // TODO (tiêu chí 3 - chức năng đăng nhập): bạn phụ trách đăng nhập viết tiếp ở đây.
+            // Đăng nhập thành công thì mở form chính:
+            //   using var formChinh = new FormChinh();
+            //   formChinh.HienThiThongTin(hoTen, tenDangNhap, email, lanDangNhapCuoi);
+            //   Hide(); formChinh.ShowDialog(); Show();
         }
-        private async Task<bool> XacThucNguoiDungAsync(string ten, string matKhau)
-        {
-            const string sql = "SELECT Salt, MatKhauBam FROM Users WHERE TenDangNhap = @ten";
-            using var conn = new SqlConnection(ChuoiKetNoi);
-            using var cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.Add("@ten", SqlDbType.NVarChar, 50).Value = ten;
 
-            await conn.OpenAsync();
-            using var reader = await cmd.ExecuteReaderAsync();
-
-            if (await reader.ReadAsync())
-            {
-                string salt = reader.GetString(reader.GetOrdinal("Salt"));
-                string matKhauBam = reader.GetString(reader.GetOrdinal("MatKhauBam"));
-                return MatKhau.KiemTra(matKhau, salt, matKhauBam);
-            }
-            return false;
-        }
-        private void chkHienMatKhau_CheckedChanged(object sender, EventArgs e)
-        {
-            txtMatKhau.UseSystemPasswordChar = !chkHienMatKhau.Checked;
-        }
-        }
         private void btnThoat_Click(object sender, EventArgs e)
         {
             Close();
-        }
-        private void lnkDangKy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            FormDangKy frmDangKy = new FormDangKy();
-            frmDangKy.FormClosed += (s, args) => this.Show();
-            this.Hide();
-            frmDangKy.Show();
         }
     }
 }
