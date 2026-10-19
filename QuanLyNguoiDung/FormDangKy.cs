@@ -39,6 +39,12 @@ namespace QuanLyNguoiDung
                     "Vui lòng nhập tên đăng nhập.";
                 hopLe = false;
             }
+            else if (ten.Length < 3)
+            {
+                lblLoiTenDangNhap.Text =
+                    "Tên đăng nhập tối thiểu 3 ký tự.";
+                hopLe = false;
+            }
             else if (ten.Length > 20)
             {
                 lblLoiTenDangNhap.Text =
@@ -60,6 +66,11 @@ namespace QuanLyNguoiDung
             if (matKhau == "")
             {
                 lblLoiMatKhau.Text = "Vui lòng nhập mật khẩu.";
+                hopLe = false;
+            }
+            else if (matKhau.Length < 8)
+            {
+                lblLoiMatKhau.Text = "Mật khẩu tối thiểu 8 ký tự.";
                 hopLe = false;
             }
 
@@ -84,6 +95,13 @@ namespace QuanLyNguoiDung
                 lblLoiEmail.Text = "Email không hợp lệ.";
                 hopLe = false;
             }
+
+            // Đưa con trỏ về ô bị lỗi đầu tiên
+            if (lblLoiTenDangNhap.Text != "") txtTenDangNhap.Focus();
+            else if (lblLoiHoTen.Text != "") txtHoTen.Focus();
+            else if (lblLoiMatKhau.Text != "") txtMatKhau.Focus();
+            else if (lblLoiXacNhanMatKhau.Text != "") txtXacNhanMatKhau.Focus();
+            else if (lblLoiEmail.Text != "") txtEmail.Focus();
 
             return hopLe;
         }
@@ -119,7 +137,7 @@ namespace QuanLyNguoiDung
                 }
 
                 // 3. Băm mật khẩu và tạo Salt riêng
-                var ketQua = MatKhau.Tao(matKhau);
+                var ketQua = await Task.Run(() => MatKhau.Tao(matKhau));
 
                 // 4. Lưu thông tin vào SQL Server
                 bool thanhCong =
