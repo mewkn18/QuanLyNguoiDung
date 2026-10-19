@@ -61,7 +61,7 @@ namespace QuanLyNguoiDung
             }
             catch (SqlException)
             {
-                lblLoi.Text = "Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra lại dịch vụ SQL Server.";
+                lblLoi.Text = "Không thể kết nối đến cơ sở dữ liệu. Vui lòng kiểm tra lại dịch vụ.";
             }
             catch (Exception ex)
             {
