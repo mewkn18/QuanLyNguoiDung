@@ -41,10 +41,7 @@ namespace QuanLyNguoiDung
 
                 if (thanhCong)
                 {
-                    // Đăng nhập thành công -> Mở Form Chính
                     FormChinh frmChinh = new FormChinh(tenDangNhap);
-                    
-                    // Khi Form chính đóng lại thì hiện lại Form đăng nhập và xóa mật khẩu
                     frmChinh.FormClosed += (s, args) =>
                     {
                         txtMatKhau.Clear();
@@ -102,6 +99,13 @@ namespace QuanLyNguoiDung
         private void btnThoat_Click(object sender, EventArgs e)
         {
             Close();
+        }
+        private void lnkDangKy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            FormDangKy frmDangKy = new FormDangKy();
+            frmDangKy.FormClosed += (s, args) => this.Show();
+            this.Hide();
+            frmDangKy.Show();
         }
     }
 }
