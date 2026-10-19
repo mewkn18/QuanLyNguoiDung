@@ -4,7 +4,7 @@ using System.Text;
 
 namespace QuanLyNguoiDung.DuLieu
 {
-    class NguoiDung
+    public class NguoiDung
     {
         public int UserId { get; set; }
         public string TenDangNhap { get; set; } = string.Empty;
