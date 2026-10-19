@@ -134,4 +134,71 @@ public class NguoiDungRepository
             return false;
         }
     }
+    /// <summary>
+    /// Tìm người dùng theo tên đăng nhập.
+    /// Trả về null nếu không tìm thấy.
+    /// </summary>
+    public async Task<NguoiDung?> TimTheoTenAsync(string tenDangNhap)
+    {
+        const string sql = """
+        SELECT UserId, TenDangNhap, MatKhauBam, Salt,
+               HoTen, Email, NgayTao, LanDangNhapCuoi
+        FROM dbo.Users
+        WHERE TenDangNhap = @tenDangNhap;
+        """;
+
+        await using var conn = new SqlConnection(_chuoiKetNoi);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.Add(
+            "@tenDangNhap", SqlDbType.NVarChar, 20
+        ).Value = tenDangNhap;
+
+        await conn.OpenAsync();
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+        {
+            return null;
+        }
+
+        NguoiDung nguoiDung = new NguoiDung
+        {
+            UserId = reader.GetInt32(0),
+            TenDangNhap = reader.GetString(1),
+            MatKhauBam = reader.GetString(2),
+            Salt = reader.GetString(3),
+            HoTen = reader.GetString(4),
+            Email = reader.IsDBNull(5)
+                ? null
+                : reader.GetString(5),
+            NgayTao = reader.GetDateTime(6),
+            LanDangNhapCuoi = reader.IsDBNull(7)
+                ? null
+                : reader.GetDateTime(7)
+        };
+
+        return nguoiDung;
+    }
+
+    /// <summary>
+    /// Cập nhật thời điểm đăng nhập gần nhất của người dùng.
+    /// </summary>
+    public async Task CapNhatLanDangNhapAsync(int userId)
+    {
+        const string sql = """
+        UPDATE dbo.Users
+        SET LanDangNhapCuoi = SYSDATETIME()
+        WHERE UserId = @id;
+        """;
+
+        await using var conn = new SqlConnection(_chuoiKetNoi);
+        await using var cmd = new SqlCommand(sql, conn);
+
+        cmd.Parameters.Add("@id", SqlDbType.Int).Value = userId;
+
+        await conn.OpenAsync();
+        await cmd.ExecuteNonQueryAsync();
+    }
 }
