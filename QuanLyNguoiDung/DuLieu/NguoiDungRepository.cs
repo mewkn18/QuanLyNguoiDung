@@ -1,5 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
-
+using System.Data;
 namespace QuanLyNguoiDung.DuLieu;
 
 /// <summary>
@@ -134,4 +134,4 @@ public class NguoiDungRepository
             return false;
         }
     }
-}}
+}
