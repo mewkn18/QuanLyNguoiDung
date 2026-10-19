@@ -426,6 +426,5 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
-
-   # Chuoi ket noi rieng cua tung may - khong commit
-   appsettings.json
+# Chuoi ket noi rieng cua tung may - khong commit
+appsettings.json
