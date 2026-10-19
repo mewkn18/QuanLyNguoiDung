@@ -7,7 +7,6 @@ namespace QuanLyNguoiDung
             InitializeComponent();
         }
 
-        // Chọn liên kết "Đăng ký": ẩn form Đăng nhập, mở form Đăng ký, đóng lại thì hiện về.
         private void lnkDangKy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             using var formDangKy = new FormDangKy();
@@ -19,11 +18,54 @@ namespace QuanLyNguoiDung
 
         private void btnDangNhap_Click(object sender, EventArgs e)
         {
-            // TODO (tiêu chí 3 - chức năng đăng nhập): bạn phụ trách đăng nhập viết tiếp ở đây.
-            // Đăng nhập thành công thì mở form chính:
-            //   using var formChinh = new FormChinh();
-            //   formChinh.HienThiThongTin(hoTen, tenDangNhap, email, lanDangNhapCuoi);
-            //   Hide(); formChinh.ShowDialog(); Show();
+         lblLoi.Text = string.Empty;
+    string ten = txtTenDangNhap.Text.Trim();
+    string matKhau = txtMatKhau.Text;
+
+    if (string.IsNullOrEmpty(ten) || string.IsNullOrEmpty(matKhau))
+    {
+        lblLoi.Text = "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.";
+        return;
+    }
+
+    btnDangNhap.Enabled = false;
+    btnDangNhap.Text = "Đang xử lý...";
+
+    try
+    {
+        var user = await repo.TimTheoTenAsync(ten);
+
+        if (user == null || MatKhau.KiemTra(matKhau, user.Salt, user.MatKhauBam) == false)
+        {
+            lblLoi.Text = "Tên đăng nhập hoặc mật khẩu không đúng.";
+            txtMatKhau.Clear();
+            txtMatKhau.Focus();
+            return;
+        }
+        await repo.CapNhatLanDangNhapAsync(user.UserId);
+
+        using var f = new FormChinh();
+        f.HienThiThongTin(user.HoTen, user.TenDangNhap, user.Email, user.LanDangNhapCuoi);
+        
+        Hide();
+        f.ShowDialog();
+        Show();
+
+        txtMatKhau.Clear();
+    }
+    catch (SqlException)
+    {
+        lblLoi.Text = "Không kết nối được tới máy chủ cơ sở dữ liệu. Vui lòng thử lại sau.";
+    }
+    catch (Exception)
+    {
+        lblLoi.Text = "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.";
+    }
+    finally
+    {
+        btnDangNhap.Enabled = true;
+        btnDangNhap.Text = "Đăng nhập";
+    }
         }
 
         private void btnThoat_Click(object sender, EventArgs e)
